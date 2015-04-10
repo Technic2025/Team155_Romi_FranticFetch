@@ -53,7 +53,10 @@ public class Robot extends IterativeRobot {
     	autoChooser.addObject("Push Straight", 2);
     	autoChooser.addObject("Push Both Sideways", 3);
     	autoChooser.addObject("Grab and Go Sideways", 4);
-    	autoChooser.addObject("Short Backup ", 5);
+    	autoChooser.addObject("Short Push Straight ", 5);
+    	autoChooser.addObject("Grab Both ", 6);
+    	//autoChooser.addObject("Wishful Thinking", 7);
+    	
     	
     	SmartDashboard.putData("Automodechooser", autoChooser);
     }
@@ -65,12 +68,12 @@ public class Robot extends IterativeRobot {
     	
     	robotDrive.EncoderReset();
     	
-    	Auto155.BOX_COUNTER = 0;
+    	//Auto155.BOX_COUNTER = 0;
     	mode = (int) autoChooser.getSelected();
-    	Auto155.drivestate = 1;
-    	Auto155.state = 0;
-    	cameraThread.disableProcessing();
-    	//cameraThread.enableProcessing();
+    	//Auto155.drivestate = 1;
+    	//Auto155.state = 0;
+    	//cameraThread.disableProcessing();
+    	cameraThread.enableProcessing();
     	
     }
     /**
@@ -100,6 +103,13 @@ public class Robot extends IterativeRobot {
     		case 5:
     			modename = 5;
     			Auto155.driveBackToAutoZone();
+    		case 6:
+    			modename = 6;
+    			Auto155.GrabBoth();	
+    		/*case 7:
+    			modename = 7;
+    			Auto155.GrabBothPushBarrel();	*/
+    			
     	}	
     	//Auto155.liftTest();	
     	//robotVision.run();

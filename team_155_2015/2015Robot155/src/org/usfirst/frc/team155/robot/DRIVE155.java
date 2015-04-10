@@ -475,13 +475,13 @@ public class DRIVE155 {
 	}
 
 	public void suckInTote() {
-		right_Sucker.set(-.5);
-		left_Sucker.set(.5);
+		right_Sucker.set(-1);
+		left_Sucker.set(1);
 	}
 
 	public void spitOutTote() {
-		right_Sucker.set(.5);
-		left_Sucker.set(-.5);
+		right_Sucker.set(1);
+		left_Sucker.set(-1);
 	}
 
 	public void doNothingWithTote() {

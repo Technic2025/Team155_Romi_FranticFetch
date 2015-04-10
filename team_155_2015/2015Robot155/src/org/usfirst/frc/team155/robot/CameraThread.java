@@ -36,7 +36,7 @@ public class CameraThread extends Thread {
 	private double horizontal;
 	private double vertical;
 	private boolean m_foundTote;
-	private int delay;
+	private double delay;
 
 	private boolean m_enabled;
 
@@ -272,7 +272,7 @@ public class CameraThread extends Thread {
 
 			if (m_enabled) {
 				System.out.println("Vision is running...");
-				delay = 1;
+				delay = .01;
 				blah();
 			}
 
@@ -353,7 +353,7 @@ public class CameraThread extends Thread {
 		// "Tote val min", TOTE_VAL_RANGE.minValue);
 		// TOTE_VAL_RANGE.maxValue = (int) SmartDashboard.getNumber(
 		// "Tote val max", TOTE_VAL_RANGE.maxValue);
-
+/*
 		// Threshold the image looking for yellow (tote color)
 		NIVision.imaqColorThreshold(binaryFrame, frame, 255,
 				NIVision.ColorMode.HSL, TOTE_HUE_RANGE, TOTE_SAT_RANGE,
@@ -474,6 +474,8 @@ public class CameraThread extends Thread {
 		// } else {
 		// SmartDashboard.putBoolean("IsTote", false);
 		// }
+		 * 
+		 */
 	}
 
 	public void blah2() {

@@ -160,18 +160,32 @@ public class Autonomous {
 		case 1:
 
 			robotDrive.PIDEnable();
-			robotDrive.DriveStraightDistance(120);
+			robotDrive.DriveStraightDistance(-100);
 
-			if (robotDrive.DriveStraightDistance(120))
+			if (robotDrive.DriveStraightDistance(-100))
 				drivestate = 2;
 			break;
 
 		case 2:
 			System.out.println("in STOP4");
-
-			drivestate = 3;
 			robotDrive.PIDDisable();
+			drivestate = 3;
 			break;
+			
+			
+		//case 3 added as it was not defined previously, it was commented out	
+		case 3:
+			
+			break;
+		/*
+		 * case 3: System.out.println("in BACKUP4");
+		 * robotDrive.DriveStraightDistance(-160);
+		 * 
+		 * if (robotDrive.DriveStraightDistance(-160)) state = 4; break;
+		 * 
+		 * case 4: System.out.println("in FINALSTOP4"); robotDrive.PIDDisable();
+		 * break;
+		 */
 
 		}
 	}
@@ -408,6 +422,112 @@ public class Autonomous {
 
 		}
 	}
+	
+	public void GrabBoth() {
+
+		switch (state) {
+		case START3:
+			System.out.println("in START3");
+
+			startTimeDRIVE = Timer.getFPGATimestamp();
+			state = STOP3;
+			// robotDrive.PIDEnable();
+			break;
+		case STOP3:
+			robotLift.autoLift(12);
+			;
+			if ((Timer.getFPGATimestamp()) - (startTimeDRIVE) > 1) {
+				state = DRIVESIDEWAYS3;
+			}
+			break;
+
+		case DRIVESIDEWAYS3:
+
+			robotDrive.team155Mecanum_fieldOriented(.5, 0, 0);
+
+			if (robotDrive.EncoderDistance() < -160)
+				state = FINALSTOP3;
+
+			// robotDrive.DriveSideDistance(160);
+
+			// if (robotDrive.DriveSideDistance(160))
+			// state = FINALSTOP3;
+			break;
+
+		case FINALSTOP3:
+			System.out.println("in FINALSTOP2");
+
+			robotDrive.PIDDisable();
+			break;
+
+		}
+	}
+	
+	public void GrabBothPushBarrel() {
+
+		switch (state) {
+		case 1://Start
+			System.out.println("in START3");
+
+			startTimeDRIVE = Timer.getFPGATimestamp();
+			state = 2;
+			// robotDrive.PIDEnable();
+			break;
+		case 2://Lift
+			robotLift.autoLift(12);
+			;
+			if ((Timer.getFPGATimestamp()) - (startTimeDRIVE) > 1) {
+				state = 3;
+			}
+			break;
+
+		case 3://Move Left
+
+			robotDrive.team155Mecanum_fieldOriented(-.5, 0, 0);
+
+			if (robotDrive.EncoderDistance() > 30)
+				state = 4;
+
+			// robotDrive.DriveSideDistance(160);
+
+			// if (robotDrive.DriveSideDistance(160))
+			// state = FINALSTOP3;
+			break;
+			
+		case 4://Move Forward
+
+			robotDrive.team155Mecanum_fieldOriented(0, .5, 0);
+
+			if (robotDrive.EncoderDistance() < -30)
+				state = 5;
+
+			// robotDrive.DriveSideDistance(160);
+
+			// if (robotDrive.DriveSideDistance(160))
+			// state = FINALSTOP3;
+			break;
+		case 5://Move right
+
+			robotDrive.team155Mecanum_fieldOriented(.5, 0, 0);
+
+			if (robotDrive.EncoderDistance() < -210)
+				state = 6;
+
+			// robotDrive.DriveSideDistance(160);
+
+			// if (robotDrive.DriveSideDistance(160))
+			// state = FINALSTOP3;
+			break;
+
+		case 6://Stop
+			System.out.println("in FINALSTOP2");
+
+			robotDrive.PIDDisable();
+			break;
+
+		}
+	}
+
 
 	public void autoLine7() {
 
