@@ -103,9 +103,11 @@ public class Robot extends IterativeRobot {
     		case 5:
     			modename = 5;
     			Auto155.driveBackToAutoZone();
+    			break;
     		case 6:
     			modename = 6;
-    			Auto155.GrabBoth();	
+    			Auto155.GrabBoth();
+    			break;
     		/*case 7:
     			modename = 7;
     			Auto155.GrabBothPushBarrel();	*/
