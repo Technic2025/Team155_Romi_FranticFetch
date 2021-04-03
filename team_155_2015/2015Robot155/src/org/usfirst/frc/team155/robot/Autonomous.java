@@ -169,7 +169,7 @@ public class Autonomous {
 		case 2:
 			System.out.println("in STOP4");
 			robotDrive.PIDDisable();
-			drivestate = 3;
+			//drivestate = 3;
 			break;
 			
 			
@@ -446,6 +446,45 @@ public class Autonomous {
 			robotDrive.team155Mecanum_fieldOriented(.5, 0, 0);
 
 			if (robotDrive.EncoderDistance() < -160)
+				state = FINALSTOP3;
+
+			// robotDrive.DriveSideDistance(160);
+
+			// if (robotDrive.DriveSideDistance(160))
+			// state = FINALSTOP3;
+			break;
+
+		case FINALSTOP3:
+			System.out.println("in FINALSTOP2");
+
+			robotDrive.PIDDisable();
+			break;
+
+		}
+	}
+	public void GrabBarrel() {
+
+		switch (state) {
+		case START3:
+			System.out.println("in START3");
+
+			startTimeDRIVE = Timer.getFPGATimestamp();
+			state = STOP3;
+			// robotDrive.PIDEnable();
+			break;
+		case STOP3:
+			robotLift.autoLift(12);
+			;
+			if ((Timer.getFPGATimestamp()) - (startTimeDRIVE) > 1) {
+				state = DRIVESIDEWAYS3;
+			}
+			break;
+
+		case DRIVESIDEWAYS3:
+
+			robotDrive.team155Mecanum_fieldOriented(0,-.5,0);
+
+			if (robotDrive.Back_Right_Encoder.getDistance() > 160)
 				state = FINALSTOP3;
 
 			// robotDrive.DriveSideDistance(160);

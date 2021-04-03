@@ -84,9 +84,9 @@ public class robotMap155 {
     public final int ARMSTICK_6 = 6;
     public final int ARMSTICK_7 = 7;
     public final int ARMSTICK_8 = 8;
-    public final int ARMSTICK_9 = 9;
+    public final int ARMOPEN = 9;
     public final int ARMSTICK_10 = 10;
-    public final int ARMSTICK_11 = 11;
+    public final int ARMCLOSE = 11;
     
     //relays
     public final int RELAY_0 = 0;

@@ -34,11 +34,16 @@ public class Lift155 {
 	public final int CARRY_BOX = 32;
 	public final int STACK_BOX = 2;
 	public boolean resetpid = true;
+	public double liftscale;
+	
+	//SOLENOIDS
+		DoubleSolenoid liftsol;
+		private int armState = 2;
 
 	public Lift155(robotMap155 robot, Joystick right) {
 		robotSystem = robot;
 		rightStick = right;
-		sol = new DoubleSolenoid(robot.GRIPPER_SIDE_A, robot.GRIPPER_SIDE_B);
+		liftsol = new DoubleSolenoid(robot.GRIPPER_SIDE_A, robot.GRIPPER_SIDE_B);
 		lowLimit = new DigitalInput(robot.LOW_LIMIT);
 		highLimit = new DigitalInput(robot.HIGH_LIMIT);
 		liftDrive = new Victor(robot.LIFT_MOTOR);
@@ -47,7 +52,9 @@ public class Lift155 {
 				robotSystem.LIFT_ENCODER_B);
 		liftEncoder.setDistancePerPulse(.01); // Competion bot
 		//liftEncoder.setDistancePerPulse(.03); // practice bot
-		liftEncoder
+		//liftEncoder.setDistancePerPulse(.03); // new lift
+
+		liftEncoder 
 				.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
 		liftMotorPID = new PIDController(kP, kI, kD, liftEncoder, liftDrive);
 		liftMotorPID.setOutputRange(-1, 1);
@@ -138,6 +145,14 @@ public class Lift155 {
 		// System.out.println("highLimit.get()" + highLimit.get());
 		// System.out.println("lowLimit.get()" + lowLimit.get());
 		// System.out.println("rightStick.getY()" + rightStick.getY());
+		/*
+		if(rightStick.getY()>0)
+			liftscale=1;
+		else
+			liftscale=100;
+		
+		double liftspeed = (rightStick.getY()/liftscale);
+		*/
 
 		if (highLimit.get() || lowLimit.get())
 			if (lowLimit.get() && (rightStick.getY() > 0))
@@ -157,8 +172,9 @@ public class Lift155 {
 	public void manualLiftnoSensors() {
 		// System.out.println("manualLiftnoSensors is running...");
 		// System.out.println("rightStick.getY() = " + rightStick.getY());
+//double liftscale=2;
 
-		liftDrive.set(rightStick.getY());
+		//liftDrive.set(rightStick.getY()/liftscale);
 	}
 
 	public void autoLift(double setPoint) {
@@ -222,17 +238,20 @@ public class Lift155 {
 		// manualLift();
 		// manualLiftnoSensors();
 
-		if (rightStick.getRawButton(3) == true)
-			liftEncoder.reset();
-
+		//if (rightStick.getRawButton(3) == true)
+			//liftEncoder.reset();
+/*
 		if (rightStick.getRawButton(10))
-			autoLift(38);// lifts arm out of the way to at human loader
+			autoLift(32);// lifts arm out of the way to at human loader
 		else if (rightStick.getRawButton(12)) 
 			autoLift(12.3); // lifts arm to catch from human loader
 		else if (rightStick.getRawButton(8)) // lifts arm to max height
-			autoLift(44);
+			autoLift(40);
 		else if (rightStick.getRawButton(2))
 			liftTest();
+	*/	
+		if (rightStick.getRawButton(12)) 
+			autoLift(12.3); // lifts arm to catch from human loader
 		else {
 			if (resetpid) {
 				liftMotorPID.reset();
@@ -242,6 +261,7 @@ public class Lift155 {
 			}
 
 			manualLift();
+			toteArm();
 
 		}
 
@@ -255,5 +275,30 @@ public class Lift155 {
 		//SmartDashboard.getNumber("rightStick.getY() = ", rightStick.getY());
 
 	}
+	
+public void openArm(){
+	liftsol.set(DoubleSolenoid.Value.kForward);
+}
 
+public void closeArm(){
+	liftsol.set(DoubleSolenoid.Value.kReverse);
+}
+
+public void toteArm() {
+		
+		
+		switch(armState){
+		case 1:
+			openArm();
+			if (rightStick.getRawButton(robotSystem.ARMOPEN))  // if the spit is pressed...
+				armState = 2;
+			break;
+		case 2:
+			closeArm();
+			if (rightStick.getRawButton(robotSystem.ARMCLOSE))
+				armState = 1;
+			break;
+
+		}
+}
 }

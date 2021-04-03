@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Gyro;
-//import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
@@ -20,6 +20,14 @@ import edu.wpi.first.wpilibj.communication.FRCNetworkCommunicationsLibrary.tInst
 import edu.wpi.first.wpilibj.communication.FRCNetworkCommunicationsLibrary.tResourceType;
 //import edu.wpi.first.wpilibj.Buttons.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//for the navx board
+import com.kauailabs.nav6.frc.IMU;
+import com.kauailabs.nav6.frc.IMUAdvanced;
+import com.kauailabs.navx_mxp.AHRS;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class DRIVE155 {
 	robotMap155 robotSystem;
@@ -100,13 +108,24 @@ public class DRIVE155 {
 	private boolean prevCentered;
 	private boolean centered;
 
+	private boolean reset_trigger = false;
+	private boolean prev_reset_trigger = false;
+	private double start_time;
+
 	double motorScale = 1;
-	
-	//SOLENOIDS
-	DoubleSolenoid sol;
-	private final int UP = 0;
-	private final int DOWN = 1;
-	private int armState = DOWN;
+
+	// SOLENOIDS
+	/*
+	 * DoubleSolenoid sol; private final int UP = 0; private final int DOWN = 1;
+	 * private int armState = DOWN;
+	 */
+
+	// navx stuffs
+	SerialPort serial_port;
+	// IMU imu; // This class can be used w/nav6 and navX MXP.
+	// IMUAdvanced imu; // This class can be used w/nav6 and navX MXP.
+	AHRS imu; // This class can only be used w/the navX MXP.
+	boolean first_iteration;
 
 	public DRIVE155(Joystick left, Joystick right, robotMap155 robot) {
 		robotSystem = robot;
@@ -116,7 +135,9 @@ public class DRIVE155 {
 		// JOYSTICKS - NEEDS MORE APPROPRIATE NAMES
 		leftStick = left;
 		rightStick = right;
-		
+
+		//navx_init();
+
 		// MOTORS FOR COMPEITION ROBOT
 		left_front = new Talon(robotSystem.DRIVE_LEFT_FRONT);
 		right_front = new Talon(robotSystem.DRIVE_RIGHT_FRONT);
@@ -186,8 +207,45 @@ public class DRIVE155 {
 		holdHeading = true;
 		prevCentered = false;
 		centered = false;
-		
-		sol = new DoubleSolenoid(robot.GRIPPER_SIDE_A, robot.GRIPPER_SIDE_B);
+
+		// sol = new DoubleSolenoid(robot.GRIPPER_SIDE_A, robot.GRIPPER_SIDE_B);
+
+	}
+
+	private void navx_init() {
+		try {
+
+			serial_port = new SerialPort(57600, SerialPort.Port.kMXP);
+
+			// You can add a second parameter to modify the
+			// update rate (in hz) from. The minimum is 4.
+			// The maximum (and the default) is 100 on a nav6, 60 on a navX MXP.
+			// If you need to minimize CPU load, you can set it to a
+			// lower value, as shown here, depending upon your needs.
+			// The recommended maximum update rate is 50Hz
+
+			// You can also use the IMUAdvanced class for advanced
+			// features on a nav6 or a navX MXP.
+
+			// You can also use the AHRS class for advanced features on
+			// a navX MXP. This offers superior performance to the
+			// IMU Advanced class, and also access to 9-axis headings
+			// and magnetic disturbance detection. This class also offers
+			// access to altitude/barometric pressure data from a
+			// navX MXP Aero.
+
+			byte update_rate_hz = 50;
+			// imu = new IMU(serial_port,update_rate_hz);
+			// imu = new IMUAdvanced(serial_port,update_rate_hz);
+			imu = new AHRS(serial_port, update_rate_hz);
+		} catch (Exception ex) {
+
+		}
+		if (imu != null) {
+			LiveWindow.addSensor("IMU", "Gyro", imu);
+		}
+		first_iteration = true;
+
 	}
 
 	// drive modes
@@ -204,7 +262,7 @@ public class DRIVE155 {
 	public void driveStraight(double heading, double speed) {
 		double error = heading - roboGyro.getAngle();
 		double turnRate = error * Kp;
-		double maxturnRate = .75;
+		double maxturnRate = .33;
 		if (turnRate > maxturnRate)
 			turnRate = maxturnRate;
 		else if (turnRate < -maxturnRate)
@@ -231,7 +289,7 @@ public class DRIVE155 {
 		pdp.clearStickyFaults(); // clear the brownouts from last run, if there
 									// are any
 
-		double maxturnRate = .5;
+		double maxturnRate = .25;
 
 		if (turnRate > maxturnRate)
 			turnRate = maxturnRate;
@@ -335,23 +393,49 @@ public class DRIVE155 {
 
 		if (rightStick.getRawButton(robotSystem.FULL_SPEED)) {// full speed
 			motorScale = 1;
-		} else if (rightStick.getRawButton(robotSystem.HALF_SPEED)) {// half speed
+		} else if (rightStick.getRawButton(robotSystem.HALF_SPEED)) {// half
+																		// speed
 			motorScale = 2;
-		} else if (rightStick.getRawButton(robotSystem.THREE_QUARTER_SPEED)) {// 3/4 speed
+		} else if (rightStick.getRawButton(robotSystem.THREE_QUARTER_SPEED)) {// 3/4
+																				// speed
 			motorScale = 1.34;
-		} 
+		}
 		team155Mecanum_fieldOriented(leftStick.getX(), leftStick.getY(), rightStick.getX());
 
 		// System.out.println("motorscale is "+ motorScale);
 		if (leftStick.getRawButton(robotSystem.GYRO_RESET) == true)
 			// PIDEnable();
 			GyroReset();
+		// this does a on-the-fly gyro init
+		// hold both triggers for 5 seconds to make this work
+		// robot must not be moving for those 5 seconds and the next 6 seconds
+
+		prev_reset_trigger = reset_trigger;
+
+		if ((leftStick.getRawButton(robotSystem.GYRO_RESET) == true) && (rightStick.getRawButton(robotSystem.GYRO_RESET) == true))
+			reset_trigger = true;
+		else
+			reset_trigger = false;
+
+		if (reset_trigger && (!prev_reset_trigger))
+			start_time = Timer.getFPGATimestamp();
+
+		if (!reset_trigger)
+			start_time = Timer.getFPGATimestamp();
+
+		if ((Timer.getFPGATimestamp() - start_time) > 5.0) {
+			System.out.println("re-initializing the gyro..........................................................................");
+			roboGyro.initGyro();
+			GyroReset();
+			System.out.println("done re-initializing gyro.........................................................................");
+		}
+
 		if (leftStick.getRawButton(robotSystem.ENCODER_RESET) == true)
 			EncoderReset();
 		if (leftStick.getRawButton(robotSystem.PID_DISABLE) == true)
 			PIDDisable();
 		// DriveStraightDistance(36);
-		toteArm();
+		// toteArm();
 	}
 
 	/*
@@ -443,26 +527,33 @@ public class DRIVE155 {
 	public void SuckorSpit() {
 		/*
 		 * if (rightStick.getRawButton(1)) motorScale = 1; if
-		 * (rightStick.getRawButton(2)) motorScale = .75; if
-		 * (rightStick.getRawButton(3)) motorScale = .5;
+		 * (rightStick.getRawButton(2)) motorScale = .75; if (rightStick)
+		 * motorScale = .5;
 		 */
 		// button 3 does: spit a tote out
 		// button 1 does: suck a tote in
 
 		if (suckerSwitch.get()) { // do we have a tote?
 									// yes we do
-			if (rightStick.getRawButton(robotSystem.SPIT_TOTE)) { // if the spit button is
-												// pressed...
+			if (rightStick.getRawButton(robotSystem.SPIT_TOTE)) { // if the spit
+																	// button is
+				// pressed...
 				spitOutTote();
 			} else {
 				doNothingWithTote();
 			}
 		} else { // we don't have a tote
-			if (rightStick.getRawButton(robotSystem.SUCK_TOTE)) { // and the button is not
-												// pressed.....
+			if (rightStick.getRawButton(robotSystem.SUCK_TOTE)) { // and the
+																	// button is
+																	// not
+				// pressed.....
 				suckInTote();
-			} else if (rightStick.getRawButton(robotSystem.SPIT_TOTE)) { // if the spit button is
-														// pressed
+			} else if (rightStick.getRawButton(robotSystem.SPIT_TOTE)) { // if
+																			// the
+																			// spit
+																			// button
+																			// is
+				// pressed
 				spitOutTote();
 			} else {
 				doNothingWithTote();
@@ -605,33 +696,20 @@ public class DRIVE155 {
 		Rear_Left_PID.reset();
 		Rear_Right_PID.reset();
 	}
-
-	public void toteSuck() {
-		if (suckerSwitch.get()) {
-			doNothingWithTote();
-		} else {
-			suckInTote();
-		}
-	}
-	
-	public void toteArm() {
-		
-		
-		switch(armState){
-		case DOWN:
-			sol.set(DoubleSolenoid.Value.kForward);
-			SuckorSpit();
-			if (rightStick.getRawButton(robotSystem.TOTE_ARM_DOWN))  // if the spit is pressed...
-				armState = UP;
-			break;
-		case UP:
-			sol.set(DoubleSolenoid.Value.kReverse);
-			doNothingWithTote();
-			if (rightStick.getRawButton(robotSystem.TOTE_ARM_UP))
-				armState = DOWN;
-			break;
-
-		}
-	}
-
+	/*
+	 * public void toteSuck() { if (suckerSwitch.get()) { doNothingWithTote(); }
+	 * else { suckInTote(); } }
+	 * 
+	 * public void toteArm() {
+	 * 
+	 * 
+	 * switch(armState){ case DOWN: sol.set(DoubleSolenoid.Value.kForward);
+	 * SuckorSpit(); if (rightStick.getRawButton(robotSystem.TOTE_ARM_DOWN)) //
+	 * if the spit is pressed... armState = UP; break; case UP:
+	 * sol.set(DoubleSolenoid.Value.kReverse); doNothingWithTote(); if
+	 * (rightStick.getRawButton(robotSystem.TOTE_ARM_UP)) armState = DOWN;
+	 * break;
+	 * 
+	 * } }
+	 */
 }
