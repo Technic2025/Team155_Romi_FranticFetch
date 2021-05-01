@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Copy 0 packages to &apos;2015OneDriver/src/org.usfirst.frc.team155.robot&apos;&#x0D;&#x0A;- Destination element: &apos;2015OneDriver/src/org.usfirst.frc.team155.robot&apos;" description="Copy packages" destination="=2015OneDriver/src&lt;org.usfirst.frc.team155.robot" flags="589830" fragments="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyPackages" stamp="1431559566429" version="1.0"/>
-</session>

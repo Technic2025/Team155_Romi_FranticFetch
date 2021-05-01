@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring accessors="true" comment="Delete element from project &apos;2015Robot155&apos;&#x0D;&#x0A;- Original project: &apos;2015Robot155&apos;&#x0D;&#x0A;- Original element: &apos;org.usfirst.frc.team155.robot.Vision155Test.java&apos;" description="Delete element" element1="/src&lt;org.usfirst.frc.team155.robot{Vision155Test.java" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1422713975670" subPackages="false" version="1.0"/>
-</session>

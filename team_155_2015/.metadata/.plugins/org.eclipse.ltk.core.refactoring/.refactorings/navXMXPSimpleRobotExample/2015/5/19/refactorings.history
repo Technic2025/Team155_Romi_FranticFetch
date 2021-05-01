@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Move 3 packages to &apos;2015Robot155/src&apos;&#x0D;&#x0A;- Original project: &apos;navXMXPSimpleRobotExample&apos;&#x0D;&#x0A;- Destination element: &apos;2015Robot155/src&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     navXMXPSimpleRobotExample/src/com.kauailabs.nav6&#x0D;&#x0A;     navXMXPSimpleRobotExample/src/com.kauailabs.nav6.frc&#x0D;&#x0A;     navXMXPSimpleRobotExample/src/com.kauailabs.navx_mxp&#x0D;&#x0A;- Update references to refactored element" description="Move packages" destination="=2015Robot155/src" element1="/src&lt;com.kauailabs.nav6" element2="/src&lt;com.kauailabs.nav6.frc" element3="/src&lt;com.kauailabs.navx_mxp" flags="589830" fragments="3" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.movePackages" stamp="1431186486353" version="1.0"/>
-</session>
